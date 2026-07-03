@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>白堊紀冒險營 - 國小數學第一階段線上測驗</title>
+  <meta name="description" content="國小數學第一學習階段（一至二年級）能力指標選擇題庫互動式線上測驗網站，挑戰翼龍峽谷、三角龍沼澤與暴龍獵場！">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Dynamic Fireworks Canvas -->
+  <canvas id="fireworks-canvas"></canvas>
+
+  <div class="container">
+    
+    <!-- ==================== ENTRY SCREEN ==================== -->
+    <div id="entry-screen" class="panel screen active">
+      <h1>白堊紀冒險營</h1>
+      <p class="subtitle">國小數學第一階段(低年級)能力指標題目總匯</p>
+      
+      <div class="story-box">
+        <div class="story-title">⚠️ 系統警告</div>
+        <p>「警告！時空傳送梭遭風暴擊中，能量核心碎裂，恐龍集體失控！時空通道將在 1 小時後關閉！」</p>
+        <p>你們是「白堊紀冒險營」的頂尖學員，正與倖存的恐龍小夥伴結盟。想要逃回人類世界，必須用「數學大腦」突破三大危機：</p>
+        <p>🦖 <strong>翼龍峽谷</strong>：計算角度與風速，閃避俯衝的無齒翼龍。</p>
+        <p>🦕 <strong>三角龍沼澤</strong>：破解數列規律，在狂奔的獸群中找出安全生路。</p>
+        <p>🐊 <strong>暴龍獵場</strong>：精密計算速度與距離，甩開霸王龍並解鎖傳送門。</p>
+        <p>倒數計時開始，立刻牽起小夥伴，用數學武器闖關逃生吧！</p>
+      </div>
+
+      <div class="form-group">
+        <label for="player-name" class="form-label">✍️ 冒險營學員姓名</label>
+        <input type="text" id="player-name" class="form-input" placeholder="請輸入你的姓名..." autocomplete="off">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">🦖 選擇你的冒險夥伴</label>
+        <div class="partner-grid">
+          
+          <div class="partner-card selected" data-partner="qiqi">
+            <span class="partner-avatar"><img src="qiqi.png" alt="奇奇"></span>
+            <span class="partner-name">奇奇</span>
+            <span class="partner-nickname">三角龍</span>
+          </div>
+
+          <div class="partner-card" data-partner="rex">
+            <span class="partner-avatar"><img src="rex.png" alt="雷克斯"></span>
+            <span class="partner-name">雷克斯</span>
+            <span class="partner-nickname">霸王龍</span>
+          </div>
+
+          <div class="partner-card" data-partner="chuichui">
+            <span class="partner-avatar"><img src="chuichui.png" alt="槌槌"></span>
+            <span class="partner-name">槌槌</span>
+            <span class="partner-nickname">甲龍</span>
+          </div>
+
+          <div class="partner-card" data-partner="blue">
+            <span class="partner-avatar"><img src="blue.png" alt="小藍"></span>
+            <span class="partner-name">小藍</span>
+            <span class="partner-nickname">迅猛龍</span>
+          </div>
+
+        </div>
+      </div>
+
+      <button id="start-btn" class="btn">啟程冒險！ ➔</button>
+    </div>
+
+    <!-- ==================== GAMEPLAY SCREEN ==================== -->
+    <div id="game-screen" class="panel screen">
+      
+      <!-- HUD System -->
+      <div class="hud-panel">
+        <div class="hud-stats-row">
+          <div class="hud-item">
+            <span class="hud-label">👤 學員:</span>
+            <span id="hud-name" class="hud-value">-</span>
+          </div>
+          <div class="hud-item">
+            <span class="hud-label">🦖 夥伴:</span>
+            <span id="hud-partner" class="hud-value">-</span>
+          </div>
+          <div class="hud-item">
+            <span class="hud-label">📊 進度:</span>
+            <span id="hud-progress-text" class="hud-value">1 / 50</span>
+          </div>
+          <div class="hud-item">
+            <span class="hud-label">🏆 分數:</span>
+            <span id="hud-score" class="hud-value">0 分</span>
+          </div>
+        </div>
+        <div class="hud-hp-row">
+          <span class="hud-label">❤️ 生命值:</span>
+          <div id="hp-container" class="hp-container">
+            <!-- Egg HP renders here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Current Stage Header -->
+      <div class="stage-header">
+        <span id="stage-emoji">🦖</span>
+        <span id="stage-title">翼龍峽谷</span>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="progress-bar-outer">
+        <div id="progress-bar-inner" class="progress-bar-inner"></div>
+      </div>
+
+      <!-- Question Card Area -->
+      <div class="question-container">
+        <div id="question-text">載入題目中...</div>
+        <div id="question-image-container" class="question-image-container"></div>
+      </div>
+
+      <!-- Option Choices Grid -->
+      <div id="options-container" class="options-grid">
+        <!-- Option buttons dynamically generated -->
+      </div>
+
+      <!-- Companion Dialogue Feedback Box -->
+      <div class="feedback-container">
+        <div id="feedback-avatar" class="feedback-avatar">🦕</div>
+        <div class="feedback-bubble">
+          <strong id="feedback-name" style="color: #1b5e20; display: block; margin-bottom: 4px;">奇奇</strong>
+          <span id="feedback-text">準備好了嗎？點擊選項回答問題！</span>
+        </div>
+      </div>
+
+      <!-- Next question action bar -->
+      <div class="action-container">
+        <button id="next-btn" class="btn btn-secondary" style="display: none;">下一題 ➔</button>
+      </div>
+
+    </div>
+
+    <!-- ==================== GAME OVER SCREEN ==================== -->
+    <div id="game-over-screen" class="panel screen">
+      <div class="game-over-box">
+        <div id="fail-partner-avatar" class="fail-avatar">🦕</div>
+        <h1 style="color: #c62828; font-size: 3rem; margin-bottom: 20px; text-shadow: 2px 2px #000;">任務失敗！</h1>
+        <p class="subtitle" style="color: #ef9a9a;">時空通道已經關閉...</p>
+        
+        <div class="story-box" style="background: rgba(0,0,0,0.4); border-color: #c62828; color: var(--text-light); text-align: center;">
+          <p id="fail-message">恐龍群包圍了我們！別灰心，重新整裝我們再試一次！</p>
+        </div>
+        
+        <button class="btn btn-danger restart-btn">重新挑戰 ↻</button>
+      </div>
+    </div>
+
+    <!-- ==================== VICTORY SCREEN ==================== -->
+    <div id="victory-screen" class="panel screen">
+      <div class="victory-box">
+        <div id="victory-partner-avatar" class="fail-avatar">🦕</div>
+        <h1 style="color: var(--accent-color); font-size: 3.2rem; margin-bottom: 10px;">順利回到人類世界！</h1>
+        <p class="subtitle" style="color: #a5d6a7; margin-bottom: 30px;">恭喜學員克服重重困難，獲得結業證書！</p>
+        
+        <!-- Companion dialogue victory words -->
+        <div class="story-box" style="background: rgba(255,255,255,0.08); border-color: var(--accent-color); color: var(--text-light); text-align: center; margin-bottom: 30px; width: 100%;">
+          <p id="victory-message">太不可思議了！我們真的突破了重重關卡！你就是最強的數學冒險家！</p>
+        </div>
+
+        <!-- Printable Certificate Card -->
+        <div class="certificate-wrapper">
+          <!-- Jungle corners decoration -->
+          <div class="cert-corner-tl">🌿</div>
+          <div class="cert-corner-tr">🌴</div>
+          <div class="cert-corner-bl">🌵</div>
+          <div class="cert-corner-br">🍁</div>
+          
+          <h2 class="cert-header">白堊紀冒險營</h2>
+          <div class="cert-sub">數學第一階段冒險結業證書</div>
+          
+          <div class="cert-body">
+            茲證明冒險營學員 <strong><span id="cert-name">冒險者</span></strong>，<br>
+            在本次生存挑戰中，展現無與倫比的數學天賦，<br>
+            成功解鎖三大恐龍危機關卡，獲得最終成績：<br>
+            <strong><span id="cert-score" class="score-highlight">100</span> 分</strong>（滿分 100 分），並順利返回人類世界。<br>
+            特頒此證，以資鼓勵！
+          </div>
+          
+          <div class="cert-footer">
+            <div class="cert-date-box">
+              <p>頒發日期：<span id="cert-date">115 年 7 月 3 日</span></p>
+            </div>
+            <div class="cert-stamp" id="cert-stamp">
+              🏆 滿分大神
+            </div>
+            <div class="cert-sig-box">
+              <span class="cert-signature">Michael Crichton</span>
+              <div class="cert-sig">冒險營總指揮官 麥可·克萊頓</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Victory actions buttons -->
+        <div class="victory-actions">
+          <button class="btn restart-btn">再次挑戰 ↻</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Questions Bank Database -->
+  <script src="questions.js"></script>
+  <!-- Main Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
