@@ -527,7 +527,7 @@ const QUESTION_BANK = [
     "indicator_code": "n-I-9",
     "indicator_desc": "認識時刻與時間常用單位。",
     "number": 1,
-    "text": "小明下午 4 點 15 分放學，這時候的時鐘應該是哪一個？",
+    "text": "小明下午 4 時 15 分放學，這時候的時鐘應該是哪一個？",
     "options": {
       "A": "3:15",
       "B": "4:15",
@@ -581,7 +581,7 @@ const QUESTION_BANK = [
     "indicator_code": "n-I-9",
     "indicator_desc": "認識時刻與時間常用單位。",
     "number": 5,
-    "text": "小美早上8點開始上課，到中午12點吃午餐。她一共上了幾個小時的課？",
+    "text": "小美早上8時開始上課，到中午12時吃午餐。她一共上了幾個小時的課？",
     "image": "clock8.png",
     "options": {
       "A": "2個小時",
