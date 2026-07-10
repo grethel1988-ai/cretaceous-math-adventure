@@ -842,6 +842,27 @@ h1 {
   }
 }
 
+/* Fraction styles for math representation (numerator on top, denominator on bottom) */
+.fraction {
+  display: inline-flex;
+  flex-direction: column;
+  vertical-align: middle;
+  text-align: center;
+  font-size: 0.82em;
+  line-height: 1.1;
+  margin: 0 0.15em;
+  transform: translateY(-0.08em);
+}
+.fraction .num {
+  border-bottom: 2px solid currentColor;
+  padding: 0 2px;
+  display: block;
+}
+.fraction .den {
+  padding: 0 2px;
+  display: block;
+}
+
 /* Print CSS Styles - Only prints the certificate card */
 @media print {
   body {

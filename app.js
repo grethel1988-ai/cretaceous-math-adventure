@@ -501,6 +501,12 @@ function generateClockSVG(timeStr) {
   `;
 }
 
+// Helper to format fraction strings (e.g. 1/8, 7/8, 1/10) to HTML vertical fraction structure
+function formatFractions(text) {
+  if (typeof text !== 'string') return text;
+  return text.replace(/\b(\d+)\/(\d+)\b/g, '<span class="fraction"><span class="num">$1</span><span class="den">$2</span></span>');
+}
+
 // Render Current Question
 function renderQuestion() {
   state.isAnswered = false;
@@ -515,7 +521,7 @@ function renderQuestion() {
   stageEmoji.textContent = stageInfo.emoji;
   
   // Render Question Text (without Indicator)
-  questionText.textContent = qData.text;
+  questionText.innerHTML = formatFractions(qData.text);
   
   // Render Question Image if present
   if (qData.image) {
@@ -559,8 +565,10 @@ function renderQuestion() {
       clockContainer.innerHTML = generateClockSVG(opt.text);
       btn.appendChild(clockContainer);
     } else {
-      const textNode = document.createTextNode(opt.text);
-      btn.appendChild(textNode);
+      const optionTextSpan = document.createElement('span');
+      optionTextSpan.className = 'option-text';
+      optionTextSpan.innerHTML = formatFractions(opt.text);
+      btn.appendChild(optionTextSpan);
     }
     
     // Store original index data
