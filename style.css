@@ -682,10 +682,10 @@ h1 {
   margin: 3px;
 }
 
-.cert-corner-tl { position: absolute; top: 8px; left: 8px; font-size: 1.1rem; }
-.cert-corner-tr { position: absolute; top: 8px; right: 8px; font-size: 1.1rem; }
-.cert-corner-bl { position: absolute; bottom: 8px; left: 8px; font-size: 1.1rem; }
-.cert-corner-br { position: absolute; bottom: 8px; right: 8px; font-size: 1.1rem; }
+.cert-corner-tl { position: absolute; top: 8px; left: 8px; font-size: 1.1rem; z-index: 1; }
+.cert-corner-tr { position: absolute; top: 8px; right: 8px; font-size: 1.1rem; z-index: 1; }
+.cert-corner-bl { position: absolute; bottom: 8px; left: 8px; font-size: 1.1rem; z-index: 1; }
+.cert-corner-br { position: absolute; bottom: 8px; right: 8px; font-size: 1.1rem; z-index: 1; }
 
 .cert-header {
   font-family: var(--font-heading);
@@ -737,6 +737,8 @@ h1 {
   margin-top: 15px;
   font-size: 0.8rem;
   gap: 10px;
+  position: relative;
+  z-index: 2;
 }
 
 .cert-date-box {
