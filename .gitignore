@@ -1,0 +1,17 @@
+# Windows
+thumbs.db
+Desktop.ini
+
+# IDEs & Editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Temporary/Backup Files
+*~
+*.bak
+*.tmp
