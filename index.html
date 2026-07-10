@@ -68,6 +68,51 @@
       <button id="start-btn" class="btn">啟程冒險！ ➔</button>
     </div>
 
+    <!-- ==================== DIFFICULTY SCREEN ==================== -->
+    <div id="difficulty-screen" class="panel screen">
+      <h1>選擇冒險難度</h1>
+      <p class="subtitle">不同的難度將面臨不同的題數與生命值挑戰！</p>
+      
+      <div class="difficulty-grid">
+        
+        <div class="difficulty-card selected" data-difficulty="easy">
+          <div class="difficulty-emoji">🦕</div>
+          <h3 class="difficulty-title">陀螺球谷</h3>
+          <p class="difficulty-desc">基礎探險</p>
+          <div class="difficulty-meta">
+            <span>❓ 題數：25 題</span>
+            <span>🥚 生命值：3 顆蛋</span>
+          </div>
+        </div>
+
+        <div class="difficulty-card" data-difficulty="normal">
+          <div class="difficulty-emoji">🐢</div>
+          <h3 class="difficulty-title">副龍櫛龍的神秘洞</h3>
+          <p class="difficulty-desc">進階考驗</p>
+          <div class="difficulty-meta">
+            <span>❓ 題數：40 題</span>
+            <span>🥚 生命值：7 顆蛋</span>
+          </div>
+        </div>
+
+        <div class="difficulty-card" data-difficulty="hard">
+          <div class="difficulty-emoji">🦖</div>
+          <h3 class="difficulty-title">翼龍觀賞區</h3>
+          <p class="difficulty-desc">終極極限</p>
+          <div class="difficulty-meta">
+            <span>❓ 題數：50 題 (完整)</span>
+            <span>🥚 生命值：10 顆蛋</span>
+          </div>
+        </div>
+
+      </div>
+      
+      <div class="difficulty-actions">
+        <button id="back-to-entry-btn" class="btn btn-secondary">上一步</button>
+        <button id="start-game-btn" class="btn">開始挑戰！ ➔</button>
+      </div>
+    </div>
+
     <!-- ==================== GAMEPLAY SCREEN ==================== -->
     <div id="game-screen" class="panel screen">
       
@@ -177,7 +222,7 @@
           
           <div class="cert-body">
             茲證明冒險營學員 <strong><span id="cert-name">冒險者</span></strong>，<br>
-            在本次生存挑戰中，展現無與倫比的數學天賦，<br>
+            在本次 <strong><span id="cert-difficulty">翼龍觀賞區</span></strong> 難度生存挑戰中，展現無與倫比的數學天賦，<br>
             成功解鎖三大恐龍危機關卡，獲得最終成績：<br>
             <strong><span id="cert-score" class="score-highlight">100</span> 分</strong>（滿分 100 分），並順利返回人類世界。<br>
             特頒此證，以資鼓勵！

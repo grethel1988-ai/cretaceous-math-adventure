@@ -250,7 +250,11 @@ function playSound(type) {
 let state = {
   playerName: '',
   partnerId: 'qiqi',
-  hp: 10,
+  difficulty: 'easy',
+  difficultyName: '陀螺球谷',
+  maxHp: 3,
+  totalQuestions: 25,
+  hp: 3,
   score: 0,
   currentQuestionIndex: 0,
   questionsList: [],
@@ -314,9 +318,48 @@ function prepareAdventureQuestions() {
   return [...shuffledQ1, ...shuffledQ2, ...shuffledQ3];
 }
 
+// Select questions based on difficulty, ensuring each indicator code is used at least once
+function selectQuestionsForDifficulty(baseline50, count) {
+  if (count === 50) return baseline50;
+  
+  // Group questions by indicator code
+  const grouped = {};
+  baseline50.forEach(q => {
+    if (!grouped[q.indicator_code]) {
+      grouped[q.indicator_code] = [];
+    }
+    grouped[q.indicator_code].push(q);
+  });
+  
+  // Guaranteed: pick 1 question from each of the 14 indicators
+  const guaranteed = [];
+  const remainingPool = [];
+  
+  Object.keys(grouped).forEach(code => {
+    const list = grouped[code];
+    const shuffledList = shuffleArray(list);
+    guaranteed.push(shuffledList[0]);
+    for (let i = 1; i < shuffledList.length; i++) {
+      remainingPool.push(shuffledList[i]);
+    }
+  });
+  
+  // Pick from remaining pool to reach the desired count
+  const remainingNeeded = count - guaranteed.length;
+  const pickedRemaining = shuffleArray(remainingPool).slice(0, remainingNeeded);
+  
+  const combined = [...guaranteed, ...pickedRemaining];
+  
+  // Sort by stage to preserve progression order
+  combined.sort((a, b) => a.stage - b.stage);
+  
+  return combined;
+}
+
 // DOM Elements
-let screenEntry, screenGame, screenGameOver, screenVictory;
+let screenEntry, screenGame, screenGameOver, screenVictory, screenDifficulty;
 let partnerCards, startBtn;
+let difficultyCards, backToEntryBtn, startGameBtn;
 let hudName, hudPartner, hudScore, hudProgressText;
 let hpContainer, stageTitle, stageEmoji, progressBarInner;
 let questionText, questionImageContainer, optionsContainer;
@@ -330,10 +373,14 @@ document.addEventListener('DOMContentLoaded', () => {
   screenGame = document.getElementById('game-screen');
   screenGameOver = document.getElementById('game-over-screen');
   screenVictory = document.getElementById('victory-screen');
+  screenDifficulty = document.getElementById('difficulty-screen');
   
   // Bind controls
   partnerCards = document.querySelectorAll('.partner-card');
   startBtn = document.getElementById('start-btn');
+  difficultyCards = document.querySelectorAll('.difficulty-card');
+  backToEntryBtn = document.getElementById('back-to-entry-btn');
+  startGameBtn = document.getElementById('start-game-btn');
   hudName = document.getElementById('hud-name');
   hudPartner = document.getElementById('hud-partner');
   hudScore = document.getElementById('hud-score');
@@ -363,8 +410,40 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
   
-  // Start Button Event
-  startBtn.addEventListener('click', startAdventure);
+  // Setup Difficulty Cards Selection
+  difficultyCards.forEach(card => {
+    card.addEventListener('click', () => {
+      difficultyCards.forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      
+      const diff = card.dataset.difficulty;
+      state.difficulty = diff;
+      if (diff === 'easy') {
+        state.difficultyName = '陀螺球谷';
+        state.maxHp = 3;
+        state.totalQuestions = 25;
+      } else if (diff === 'normal') {
+        state.difficultyName = '副龍櫛龍的神秘洞';
+        state.maxHp = 7;
+        state.totalQuestions = 40;
+      } else {
+        state.difficultyName = '翼龍觀賞區';
+        state.maxHp = 10;
+        state.totalQuestions = 50;
+      }
+    });
+  });
+
+  // Back button in Difficulty Screen
+  backToEntryBtn.addEventListener('click', () => {
+    switchScreen(screenEntry);
+  });
+
+  // Start game button in Difficulty Screen
+  startGameBtn.addEventListener('click', startAdventure);
+
+  // Start Button Event - goes to difficulty screen
+  startBtn.addEventListener('click', goToDifficultySelect);
   
   // Next Button Event
   nextBtn.addEventListener('click', nextQuestion);
@@ -383,19 +462,25 @@ function updateAvatar(elementOrId, partnerId) {
   element.innerHTML = `<img src="${partnerId}.png" alt="${altText}">`;
 }
 
-// Start Adventure
-function startAdventure() {
+// Go to Difficulty Selection Screen
+function goToDifficultySelect() {
   const nameInput = document.getElementById('player-name').value.trim();
   if (!nameInput) {
     alert('請輸入你的冒險營學員姓名！');
     return;
   }
-  
   state.playerName = nameInput;
-  state.hp = 10;
+  switchScreen(screenDifficulty);
+}
+
+// Start Adventure
+function startAdventure() {
+  state.hp = state.maxHp;
   state.score = 0;
   state.currentQuestionIndex = 0;
-  state.questionsList = prepareAdventureQuestions();
+  
+  const baseline50 = prepareAdventureQuestions();
+  state.questionsList = selectQuestionsForDifficulty(baseline50, state.totalQuestions);
   state.isAnswered = false;
   state.selectedOptionIndex = null;
   
@@ -426,12 +511,12 @@ function switchScreen(targetScreen) {
 
 // Update HUD stats
 function updateHUD() {
-  hudScore.textContent = `${state.score} 分`;
-  hudProgressText.textContent = `${state.currentQuestionIndex + 1} / 50 題`;
+  hudScore.textContent = `${Math.round(state.score)} 分`;
+  hudProgressText.textContent = `${state.currentQuestionIndex + 1} / ${state.totalQuestions} 題`;
   
   // Render HP Eggs
   hpContainer.innerHTML = '';
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < state.maxHp; i++) {
     const egg = document.createElement('span');
     egg.className = 'hp-egg';
     if (i < state.hp) {
@@ -444,7 +529,7 @@ function updateHUD() {
   }
   
   // Update progress bar
-  const progressPercent = (state.currentQuestionIndex / 50) * 100;
+  const progressPercent = (state.currentQuestionIndex / state.totalQuestions) * 100;
   progressBarInner.style.width = `${progressPercent}%`;
 }
 
@@ -594,7 +679,7 @@ function handleOptionClick(selectedBtn, idx) {
   if (isCorrect) {
     // Correct!
     selectedBtn.classList.add('correct');
-    state.score += 2;
+    state.score += 100 / state.totalQuestions;
     playSound('correct');
     
     // Select a random correct feedback dialogue
@@ -631,18 +716,19 @@ function handleOptionClick(selectedBtn, idx) {
 function nextQuestion() {
   state.currentQuestionIndex++;
   
-  if (state.currentQuestionIndex >= 50) {
+  if (state.currentQuestionIndex >= state.totalQuestions) {
     // Game Completed!
     showVictory();
   } else {
+    const prevQ = state.questionsList[state.currentQuestionIndex - 1];
     // Load next question
     renderQuestion();
     updateHUD();
     
     // Clear dialogue back to companion standard welcome/encouragement on stage transit
-    if (state.currentQuestionIndex === 17 || state.currentQuestionIndex === 34) {
-      const info = PARTNER_DIALOGUES[state.partnerId];
-      feedbackText.textContent = `闖關成功！我們進入了第二關「${STAGES[state.currentQuestionIndex === 17 ? 2 : 3].name}」！加油，我們能行！`;
+    const currQ = state.questionsList[state.currentQuestionIndex];
+    if (prevQ && currQ && prevQ.stage !== currQ.stage) {
+      feedbackText.textContent = `闖關成功！我們進入了「${STAGES[currQ.stage].name}」！加油，我們能行！`;
     }
   }
 }
@@ -666,7 +752,8 @@ function showVictory() {
   
   // Compile Certificate values
   document.getElementById('cert-name').textContent = state.playerName;
-  document.getElementById('cert-score').textContent = state.score;
+  document.getElementById('cert-difficulty').textContent = state.difficultyName;
+  document.getElementById('cert-score').textContent = Math.round(state.score);
   
   const today = new Date();
   const dateStr = `${today.getFullYear()} 年 ${today.getMonth() + 1} 月 ${today.getDate()} 日`;
